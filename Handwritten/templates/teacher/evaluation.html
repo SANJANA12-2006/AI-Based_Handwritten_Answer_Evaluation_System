@@ -1,0 +1,642 @@
+{% extends "base.html" %}
+
+{% block title %}Student Evaluation — NoteGrade{% endblock %}
+
+{% block content %}
+
+<section style="
+    min-height:calc(100vh - 82px);
+    padding:120px 20px 80px;
+    background:#f8f9fc;
+">
+
+    <div style="
+        max-width:1050px;
+        margin:auto;
+    ">
+
+
+        <a
+            href="{{ url_for(
+                'teacher.submissions',
+                test_id=test.id
+            ) }}"
+            style="
+                color:#667085;
+                font-size:12px;
+                text-decoration:none;
+            "
+        >
+            ← Submissions
+        </a>
+
+
+        <!-- HEADER -->
+
+        <div style="
+            margin-top:28px;
+        ">
+
+            <div class="section-label">
+                STUDENT EVALUATION
+            </div>
+
+            <h1 style="
+                margin-top:10px;
+                font-family:Manrope,sans-serif;
+                font-size:32px;
+                color:#101828;
+            ">
+                {{ submission.student.name }}
+            </h1>
+
+            <p style="
+                margin-top:7px;
+                color:#667085;
+                font-size:12px;
+            ">
+                {{ test.title }}
+                · Submission #{{ submission.id }}
+            </p>
+
+        </div>
+
+
+        <!-- SCORE SUMMARY -->
+
+        <div style="
+            margin-top:28px;
+            display:grid;
+            grid-template-columns:repeat(3,1fr);
+            gap:15px;
+        ">
+
+            <div style="
+                padding:23px;
+                background:white;
+                border:1px solid #e5e7eb;
+                border-radius:18px;
+            ">
+
+                <div style="
+                    color:#667085;
+                    font-size:9px;
+                    font-weight:700;
+                ">
+                    AI SCORE
+                </div>
+
+                <div style="
+                    margin-top:8px;
+                    font-family:Manrope,sans-serif;
+                    font-size:25px;
+                    font-weight:800;
+                ">
+
+                    {% set ai_total = namespace(value=0) %}
+
+                    {% for evaluation in evaluations %}
+                        {% set ai_total.value = ai_total.value + (evaluation.marks or 0) %}
+                    {% endfor %}
+
+                    {{ "%.2f"|format(ai_total.value) }}
+                    /
+                    {{ "%.2f"|format(test.total_marks or 0) }}
+
+                </div>
+
+            </div>
+
+
+            <div style="
+                padding:23px;
+                background:white;
+                border:1px solid #e5e7eb;
+                border-radius:18px;
+            ">
+
+                <div style="
+                    color:#667085;
+                    font-size:9px;
+                    font-weight:700;
+                ">
+                    FINAL SCORE
+                </div>
+
+                <div style="
+                    margin-top:8px;
+                    font-family:Manrope,sans-serif;
+                    font-size:25px;
+                    font-weight:800;
+                    color:#635bff;
+                ">
+
+                    {% if submission.status == "teacher_reviewed" %}
+
+                        {{ "%.2f"|format(submission.total_marks or 0) }}
+
+                    {% else %}
+
+                        Pending Review
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+
+            <div style="
+                padding:23px;
+                background:white;
+                border:1px solid #e5e7eb;
+                border-radius:18px;
+            ">
+
+                <div style="
+                    color:#667085;
+                    font-size:9px;
+                    font-weight:700;
+                ">
+                    STATUS
+                </div>
+
+                <div style="
+                    margin-top:9px;
+                ">
+
+                    {% if submission.status == "teacher_reviewed" %}
+
+                        <span style="
+                            padding:7px 11px;
+                            border-radius:50px;
+                            background:#ecfdf3;
+                            color:#087443;
+                            font-size:9px;
+                            font-weight:800;
+                        ">
+                            REVIEWED
+                        </span>
+
+                    {% else %}
+
+                        <span style="
+                            padding:7px 11px;
+                            border-radius:50px;
+                            background:#f0efff;
+                            color:#635bff;
+                            font-size:9px;
+                            font-weight:800;
+                        ">
+                            AI EVALUATED
+                        </span>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- REVIEW FORM -->
+
+        {% if evaluations %}
+
+        <form
+            method="POST"
+            action="{{ url_for(
+                'teacher.save_evaluation',
+                submission_id=submission.id
+            ) }}"
+        >
+
+            {% for evaluation in evaluations %}
+
+            <div style="
+                margin-top:22px;
+                padding:28px;
+                background:white;
+                border:1px solid #e5e7eb;
+                border-radius:22px;
+                box-shadow:0 7px 25px rgba(16,24,40,.035);
+            ">
+
+
+                <!-- QUESTION -->
+
+                <div style="
+                    display:flex;
+                    justify-content:space-between;
+                    align-items:flex-start;
+                    gap:20px;
+                ">
+
+                    <div style="
+                        flex:1;
+                    ">
+
+                        <span style="
+                            display:inline-block;
+                            padding:6px 11px;
+                            border-radius:50px;
+                            background:#f0efff;
+                            color:#635bff;
+                            font-size:9px;
+                            font-weight:800;
+                        ">
+                            QUESTION
+                            {{ evaluation.question.question_number }}
+                        </span>
+
+                        <h2 style="
+                            margin-top:12px;
+                            font-family:Manrope,sans-serif;
+                            font-size:17px;
+                            color:#101828;
+                            line-height:1.5;
+                        ">
+                            {{ evaluation.question.question_text }}
+                        </h2>
+
+                    </div>
+
+
+                    <div style="
+                        min-width:105px;
+                        padding:12px;
+                        border-radius:14px;
+                        background:#f8f9fc;
+                        text-align:center;
+                    ">
+
+                        <div style="
+                            color:#667085;
+                            font-size:8px;
+                        ">
+                            MAX MARKS
+                        </div>
+
+                        <strong style="
+                            display:block;
+                            margin-top:4px;
+                            font-size:17px;
+                        ">
+                            {{ evaluation.max_marks }}
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+                <!-- KEY ANSWER -->
+
+                <div style="
+                    margin-top:22px;
+                ">
+
+                    <div style="
+                        color:#667085;
+                        font-size:9px;
+                        font-weight:800;
+                        letter-spacing:.07em;
+                    ">
+                        TEACHER KEY ANSWER
+                    </div>
+
+                    <div style="
+                        margin-top:9px;
+                        padding:17px;
+                        border-radius:13px;
+                        background:#f8f9fc;
+                        border:1px solid #eef0f4;
+                        color:#344054;
+                        font-size:11px;
+                        line-height:1.8;
+                        white-space:pre-wrap;
+                    ">
+{{ evaluation.question.key_answer }}
+                    </div>
+
+                </div>
+
+
+                <!-- STUDENT ANSWER -->
+
+                <div style="
+                    margin-top:20px;
+                ">
+
+                    <div style="
+                        color:#667085;
+                        font-size:9px;
+                        font-weight:800;
+                        letter-spacing:.07em;
+                    ">
+                        STUDENT ANSWER · OCR
+                    </div>
+
+                    <div style="
+                        margin-top:9px;
+                        padding:17px;
+                        border-radius:13px;
+                        background:#fff;
+                        border:1px solid #dfe3ea;
+                        color:#202532;
+                        font-size:11px;
+                        line-height:1.8;
+                        white-space:pre-wrap;
+                    ">
+{% if evaluation.student_answer %}
+{{ evaluation.student_answer }}
+{% else %}
+No answer detected.
+{% endif %}
+                    </div>
+
+                </div>
+
+                {% set student_sheet = namespace(found=None) %}
+                {% for sheet in submission.answer_sheets %}
+                    {% if sheet.page_number == evaluation.question.question_number or loop.index == 1 %}
+                        {% set student_sheet.found = sheet %}
+                    {% endif %}
+                {% endfor %}
+
+                {% if student_sheet.found and student_sheet.found.original_path %}
+                <div style="margin-top:20px;">
+                    <div style="
+                        color:#667085;
+                        font-size:9px;
+                        font-weight:800;
+                        letter-spacing:.07em;
+                    ">
+                        STUDENT UPLOADED IMAGE
+                    </div>
+                    <div style="margin-top:9px; padding:12px; border:1px solid #dfe3ea; border-radius:13px; background:#fff;">
+                        <img
+                            src="{{ student_sheet.found.image_url }}"
+                            alt="Student uploaded answer sheet"
+                            style="
+                                width:100%;
+                                max-height:340px;
+                                object-fit:contain;
+                                border-radius:12px;
+                                border:1px solid #eef0f4;
+                                background:#f8fafc;
+                            "
+                        >
+                    </div>
+                </div>
+                {% endif %}
+
+
+                <!-- AI ANALYSIS -->
+
+                <div style="
+                    margin-top:20px;
+                    padding:19px;
+                    border-radius:15px;
+                    background:#f0efff;
+                ">
+
+                    <div style="
+                        color:#4b45a3;
+                        font-size:9px;
+                        font-weight:800;
+                    ">
+                        AI ANALYSIS
+                    </div>
+
+                    <div style="
+                        margin-top:9px;
+                        color:#34307a;
+                        font-size:11px;
+                        line-height:1.7;
+                    ">
+                        {{ evaluation.feedback }}
+                    </div>
+
+
+                    <div style="
+                        margin-top:15px;
+                        display:flex;
+                        gap:20px;
+                        flex-wrap:wrap;
+                        color:#4b45a3;
+                        font-size:9px;
+                    ">
+
+                        <span>
+                            AI MARKS:
+                            <strong>
+                                {{ "%.2f"|format(evaluation.marks or 0) }}
+                            </strong>
+                        </span>
+
+                        {% if evaluation.confidence is not none %}
+
+                        <span>
+                            CONFIDENCE:
+                            <strong>
+                                {{ "%.1f"|format(evaluation.confidence) }}%
+                            </strong>
+                        </span>
+
+                        {% endif %}
+
+                    </div>
+
+                </div>
+
+
+                <!-- TEACHER REVIEW -->
+
+                <div style="
+                    margin-top:23px;
+                    padding-top:22px;
+                    border-top:1px solid #eef0f4;
+                ">
+
+                    <div style="
+                        color:#101828;
+                        font-size:11px;
+                        font-weight:800;
+                    ">
+                        Teacher Review
+                    </div>
+
+
+                    <div style="
+                        display:grid;
+                        grid-template-columns:180px 1fr;
+                        gap:15px;
+                        margin-top:15px;
+                    ">
+
+
+                        <!-- MARKS -->
+
+                        <div>
+
+                            <label style="
+                                display:block;
+                                margin-bottom:7px;
+                                color:#667085;
+                                font-size:9px;
+                                font-weight:700;
+                            ">
+                                FINAL MARKS
+                            </label>
+
+                            <input
+                                type="number"
+                                name="marks_{{ evaluation.id }}"
+                                value="{{ evaluation.teacher_marks if evaluation.teacher_marks is not none else evaluation.marks }}"
+                                min="0"
+                                max="{{ evaluation.max_marks }}"
+                                step="0.01"
+                                style="
+                                    width:100%;
+                                    padding:12px;
+                                    border:1px solid #d0d5dd;
+                                    border-radius:10px;
+                                    font-size:12px;
+                                    outline:none;
+                                "
+                            >
+
+                        </div>
+
+
+                        <!-- FEEDBACK -->
+
+                        <div>
+
+                            <label style="
+                                display:block;
+                                margin-bottom:7px;
+                                color:#667085;
+                                font-size:9px;
+                                font-weight:700;
+                            ">
+                                TEACHER FEEDBACK
+                            </label>
+
+                            <textarea
+                                name="feedback_{{ evaluation.id }}"
+                                rows="3"
+                                placeholder="Add your feedback..."
+                                style="
+                                    width:100%;
+                                    padding:12px;
+                                    border:1px solid #d0d5dd;
+                                    border-radius:10px;
+                                    font-family:inherit;
+                                    font-size:11px;
+                                    resize:vertical;
+                                    outline:none;
+                                "
+                            >{{ evaluation.teacher_feedback or "" }}</textarea>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            {% endfor %}
+
+
+            <!-- SAVE -->
+
+            <div style="
+                margin-top:25px;
+                padding:23px;
+                background:white;
+                border:1px solid #e5e7eb;
+                border-radius:20px;
+                display:flex;
+                justify-content:space-between;
+                align-items:center;
+                gap:20px;
+            ">
+
+                <div>
+
+                    <div style="
+                        font-size:12px;
+                        font-weight:800;
+                        color:#101828;
+                    ">
+                        Complete Teacher Review
+                    </div>
+
+                    <div style="
+                        margin-top:5px;
+                        color:#667085;
+                        font-size:10px;
+                    ">
+                        Your marks will become the student's final result.
+                    </div>
+
+                </div>
+
+
+                <button
+                    type="submit"
+                    class="btn btn-primary"
+                >
+                    Save Final Evaluation ✓
+                </button>
+
+            </div>
+
+        </form>
+
+        {% else %}
+
+        <div style="
+            margin-top:30px;
+            padding:50px;
+            background:white;
+            border:1px solid #e5e7eb;
+            border-radius:22px;
+            text-align:center;
+        ">
+
+            <div style="
+                font-size:35px;
+            ">
+                ⏳
+            </div>
+
+            <h2 style="
+                margin-top:15px;
+                font-family:Manrope,sans-serif;
+                font-size:20px;
+            ">
+                Evaluation Not Available
+            </h2>
+
+            <p style="
+                margin-top:8px;
+                color:#667085;
+                font-size:11px;
+            ">
+                This submission has not been evaluated yet.
+            </p>
+
+        </div>
+
+        {% endif %}
+
+    </div>
+
+</section>
+
+{% endblock %}

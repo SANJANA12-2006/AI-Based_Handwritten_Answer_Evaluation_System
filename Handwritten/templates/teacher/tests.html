@@ -1,0 +1,299 @@
+{% extends "base.html" %}
+
+{% block title %}My Tests — NoteGrade{% endblock %}
+
+{% block content %}
+
+<section style="
+    min-height:calc(100vh - 82px);
+    padding:130px 20px 80px;
+    background:#f8f9fc;
+">
+
+    <div class="container">
+
+        <div style="
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            flex-wrap:wrap;
+            gap:20px;
+        ">
+
+            <div>
+
+                <div class="section-label">
+                    TEACHER PORTAL
+                </div>
+
+                <h1 style="
+                    margin-top:10px;
+                    font-family:Manrope,sans-serif;
+                    font-size:34px;
+                ">
+                    My Tests
+                </h1>
+
+                <p style="
+                    margin-top:7px;
+                    color:#667085;
+                    font-size:13px;
+                ">
+                    Create and manage your classroom tests.
+                </p>
+
+            </div>
+
+            <a href="{{ url_for('teacher.create_test') }}" class="btn btn-primary">
+                + Create New Test
+            </a>
+
+        </div>
+
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+
+        {% if messages %}
+
+        <div style="margin-top:25px;">
+
+            {% for category, message in messages %}
+
+            <div style="
+                            padding:12px 15px;
+                            border-radius:10px;
+                            margin-bottom:10px;
+                            font-size:12px;
+
+                            {% if category == 'error' %}
+                            color:#b42318;
+                            background:#fef3f2;
+                            border:1px solid #fecdca;
+                            {% else %}
+                            color:#087443;
+                            background:#ecfdf3;
+                            border:1px solid #abefc6;
+                            {% endif %}
+                        ">
+                {{ message }}
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+        {% endif %}
+
+        {% endwith %}
+
+
+        <div style="
+            margin-top:30px;
+            display:grid;
+            gap:16px;
+        ">
+
+            {% if tests %}
+
+            {% for test in tests %}
+
+            <div style="
+                    padding:25px;
+                    border:1px solid #e5e7eb;
+                    border-radius:18px;
+                    background:white;
+                    box-shadow:0 8px 25px rgba(16,24,40,.04);
+                ">
+
+                <div style="
+                        display:flex;
+                        justify-content:space-between;
+                        gap:20px;
+                        align-items:flex-start;
+                        flex-wrap:wrap;
+                    ">
+
+                    <div>
+
+                        <div style="
+                                display:flex;
+                                align-items:center;
+                                gap:10px;
+                            ">
+
+                            <h2 style="
+                                    font-family:Manrope,sans-serif;
+                                    font-size:19px;
+                                ">
+                                {{ test.title }}
+                            </h2>
+
+                            {% if test.status == "published" %}
+
+                            <span style="
+                                    padding:5px 9px;
+                                    border-radius:50px;
+                                    background:#ecfdf3;
+                                    color:#087443;
+                                    font-size:9px;
+                                    font-weight:800;
+                                ">
+                                PUBLISHED
+                            </span>
+
+                            {% else %}
+
+                            <span style="
+                                    padding:5px 9px;
+                                    border-radius:50px;
+                                    background:#fff7ed;
+                                    color:#c2410c;
+                                    font-size:9px;
+                                    font-weight:800;
+                                ">
+                                DRAFT
+                            </span>
+
+                            {% endif %}
+
+                        </div>
+
+
+                        <p style="
+                                margin-top:7px;
+                                color:#667085;
+                                font-size:12px;
+                            ">
+                            {{ test.description or "No description provided." }}
+                        </p>
+
+                    </div>
+
+
+                    {% if test.status == "draft" %}
+
+                    <a href="{{ url_for('teacher.add_questions', test_id=test.id) }}" class="btn btn-primary">
+                        Add Questions →
+                    </a>
+
+                    {% else %}
+
+                    <a href="{{ url_for('teacher.test_details', test_id=test.id) }}" class="btn btn-outline">
+                        View Test
+                    </a>
+
+                    <a href="{{ url_for(
+                             'teacher.submissions',
+                                test_id=test.id
+                                ) }}" class="btn btn-primary">
+                        View Submissions →
+                    </a>
+
+                    {% endif %}
+
+                </div>
+
+
+                <div style="
+                        display:flex;
+                        gap:25px;
+                        flex-wrap:wrap;
+                        margin-top:20px;
+                        padding-top:18px;
+                        border-top:1px solid #eef0f4;
+                        color:#667085;
+                        font-size:11px;
+                    ">
+
+                    <span>
+                        🎓 {{ test.assigned_class.name }}
+                    </span>
+
+                    <span>
+                        ❓ {{ test.questions|length }} Questions
+                    </span>
+
+                    <span>
+                        🏆 {{ test.total_marks }} Marks
+                    </span>
+
+                    {% if test.duration %}
+
+                    <span>
+                        ⏱ {{ test.duration }} Minutes
+                    </span>
+
+                    {% endif %}
+
+                </div>
+
+
+                {% if test.status == "draft" %}
+
+                <form method="POST" action="{{ url_for('teacher.delete_test', test_id=test.id) }}"
+                    style="margin-top:15px;" onsubmit="return confirm('Delete this draft test?');">
+
+                    <button type="submit" style="
+                                border:none;
+                                background:none;
+                                padding:0;
+                                color:#b42318;
+                                cursor:pointer;
+                                font-size:11px;
+                            ">
+                        Delete Draft
+                    </button>
+
+                </form>
+
+                {% endif %}
+
+            </div>
+
+            {% endfor %}
+
+            {% else %}
+
+            <div style="
+                    padding:70px 30px;
+                    border:1px dashed #d8dce5;
+                    border-radius:20px;
+                    background:white;
+                    text-align:center;
+                ">
+
+                <div style="font-size:45px;">
+                    📝
+                </div>
+
+                <h2 style="
+                        margin-top:15px;
+                        font-family:Manrope,sans-serif;
+                        font-size:21px;
+                    ">
+                    No tests yet
+                </h2>
+
+                <p style="
+                        margin-top:8px;
+                        color:#667085;
+                        font-size:12px;
+                    ">
+                    Create your first test and add questions with key answers.
+                </p>
+
+                <a href="{{ url_for('teacher.create_test') }}" class="btn btn-primary" style="margin-top:20px;">
+                    Create First Test
+                </a>
+
+            </div>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endblock %}

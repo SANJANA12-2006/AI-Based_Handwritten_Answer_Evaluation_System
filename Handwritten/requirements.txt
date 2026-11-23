@@ -1,0 +1,12 @@
+Flask
+Flask-SQLAlchemy
+Flask-Login
+PyMySQL
+python-dotenv
+requests
+Pillow
+opencv-python
+numpy
+sentence-transformers
+scikit-learn
+rapidfuzz

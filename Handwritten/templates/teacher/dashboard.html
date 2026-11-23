@@ -1,0 +1,191 @@
+{% extends "base.html" %}
+
+{% block title %}Teacher Dashboard — NoteGrade{% endblock %}
+
+{% block content %}
+
+<section style="
+    min-height:calc(100vh - 82px);
+    padding:130px 20px 80px;
+    background:#f8f9fc;
+">
+
+    <div class="container">
+
+        <div style="
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            gap:20px;
+            flex-wrap:wrap;
+        ">
+
+            <div>
+
+                <div class="section-label">
+                    TEACHER PORTAL
+                </div>
+
+                <h1 style="
+                    margin-top:10px;
+                    font-family:Manrope,sans-serif;
+                    font-size:36px;
+                    letter-spacing:-1px;
+                ">
+                    Welcome, {{ current_user.name }} 👋
+                </h1>
+
+                <p style="
+                    margin-top:8px;
+                    color:#667085;
+                    font-size:13px;
+                ">
+                    Create tests, manage questions and evaluate student
+                    handwritten answers.
+                </p>
+
+            </div>
+
+            <div style="
+                display:flex;
+                gap:10px;
+            ">
+
+                <a
+                    href="{{ url_for('teacher.create_test') }}"
+                    class="btn btn-primary"
+                >
+                    + Create Test
+                </a>
+
+                <a
+                    href="{{ url_for('auth.logout') }}"
+                    class="btn btn-outline"
+                >
+                    Logout
+                </a>
+
+            </div>
+
+        </div>
+
+
+        <div style="
+            display:grid;
+            grid-template-columns:repeat(4,1fr);
+            gap:16px;
+            margin-top:40px;
+        ">
+
+            <div class="feature-card">
+
+                <div style="font-size:25px;">
+                    📝
+                </div>
+
+                <h3 style="margin-top:12px;">
+                    {{ total_tests }}
+                </h3>
+
+                <p>Total Tests</p>
+
+            </div>
+
+
+            <div class="feature-card">
+
+                <div style="font-size:25px;">
+                    👨‍🎓
+                </div>
+
+                <h3 style="margin-top:12px;">
+                    {{ total_students }}
+                </h3>
+
+                <p>Students</p>
+
+            </div>
+
+
+            <div class="feature-card">
+
+                <div style="font-size:25px;">
+                    🚀
+                </div>
+
+                <h3 style="margin-top:12px;">
+                    {{ published_tests }}
+                </h3>
+
+                <p>Published Tests</p>
+
+            </div>
+
+
+            <div class="feature-card">
+
+                <div style="font-size:25px;">
+                    📋
+                </div>
+
+                <h3 style="margin-top:12px;">
+                    {{ draft_tests }}
+                </h3>
+
+                <p>Draft Tests</p>
+
+            </div>
+
+        </div>
+
+
+        <div style="
+            margin-top:28px;
+            padding:35px;
+            border:1px solid #e7e9ef;
+            border-radius:22px;
+            background:white;
+            box-shadow:0 10px 30px rgba(16,24,40,.04);
+        ">
+
+            <div style="
+                display:flex;
+                justify-content:space-between;
+                align-items:center;
+            ">
+
+                <div>
+
+                    <h2 style="
+                        font-family:Manrope,sans-serif;
+                        font-size:21px;
+                    ">
+                        Teacher Workspace
+                    </h2>
+
+                    <p style="
+                        margin-top:6px;
+                        color:#667085;
+                        font-size:12px;
+                    ">
+                        Start by creating your first handwritten evaluation test.
+                    </p>
+
+                </div>
+
+                <a
+                    href="{{ url_for('teacher.tests') }}"
+                    class="btn btn-outline"
+                >
+                    View Tests →
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endblock %}

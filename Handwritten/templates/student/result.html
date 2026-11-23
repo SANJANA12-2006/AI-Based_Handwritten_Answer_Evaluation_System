@@ -1,0 +1,586 @@
+{% extends "base.html" %}
+
+{% block title %}Evaluation Result — NoteGrade{% endblock %}
+
+{% block content %}
+
+<section style="
+    min-height:calc(100vh - 82px);
+    padding:120px 20px 80px;
+    background:#f8f9fc;
+">
+
+    <div style="
+        max-width:1000px;
+        margin:auto;
+    ">
+
+
+        <!-- BACK -->
+
+        <a
+            href="{{ url_for('student.dashboard') }}"
+            style="
+                color:#667085;
+                font-size:12px;
+                text-decoration:none;
+            "
+        >
+            ← Dashboard
+        </a>
+
+
+        <!-- HEADER -->
+
+        <div style="
+            margin-top:28px;
+        ">
+
+            <div class="section-label">
+                AI EVALUATION
+            </div>
+
+            <h1 style="
+                margin-top:10px;
+                font-family:Manrope,sans-serif;
+                font-size:36px;
+                color:#101828;
+            ">
+                Your Test Result
+            </h1>
+
+            <p style="
+                margin-top:8px;
+                color:#667085;
+                font-size:12px;
+            ">
+                Submission #{{ submission.id }}
+            </p>
+
+        </div>
+
+
+        {% if submission.status == "evaluated" %}
+
+
+        <!-- SCORE CARD -->
+
+        <div style="
+            margin-top:30px;
+            padding:32px;
+            border-radius:24px;
+            background:white;
+            border:1px solid #e5e7eb;
+            box-shadow:0 15px 40px rgba(16,24,40,.05);
+            display:grid;
+            grid-template-columns:1fr 1fr 1fr;
+            gap:20px;
+            align-items:center;
+        ">
+
+
+            <!-- TOTAL -->
+
+            <div style="
+                text-align:center;
+            ">
+
+                <div style="
+                    width:76px;
+                    height:76px;
+                    margin:auto;
+                    display:flex;
+                    align-items:center;
+                    justify-content:center;
+                    border-radius:22px;
+                    background:#f0efff;
+                    color:#635bff;
+                    font-size:28px;
+                    font-weight:800;
+                ">
+                    ✓
+                </div>
+
+                <div style="
+                    margin-top:15px;
+                    color:#667085;
+                    font-size:10px;
+                    font-weight:700;
+                    text-transform:uppercase;
+                    letter-spacing:.08em;
+                ">
+                    Total Score
+                </div>
+
+                <div style="
+                    margin-top:6px;
+                    font-family:Manrope,sans-serif;
+                    font-size:28px;
+                    font-weight:800;
+                    color:#101828;
+                ">
+                    {{ "%.2f"|format(submission.total_marks or 0) }}
+                </div>
+
+            </div>
+
+
+            <!-- PERCENTAGE -->
+
+            <div style="
+                text-align:center;
+                padding:20px;
+                border-left:1px solid #eef0f4;
+                border-right:1px solid #eef0f4;
+            ">
+
+                <div style="
+                    color:#667085;
+                    font-size:10px;
+                    font-weight:700;
+                    text-transform:uppercase;
+                    letter-spacing:.08em;
+                ">
+                    Percentage
+                </div>
+
+                <div style="
+                    margin-top:8px;
+                    font-family:Manrope,sans-serif;
+                    font-size:42px;
+                    font-weight:900;
+                    color:#635bff;
+                ">
+                    {{ "%.1f"|format(submission.percentage or 0) }}%
+                </div>
+
+                <div style="
+                    margin-top:8px;
+                    font-size:10px;
+                    color:#667085;
+                ">
+                    AI evaluated
+                </div>
+
+            </div>
+
+
+            <!-- PERFORMANCE -->
+
+            <div style="
+                text-align:center;
+            ">
+
+                {% if submission.percentage >= 85 %}
+
+                    <div style="
+                        font-size:30px;
+                    ">
+                        🏆
+                    </div>
+
+                    <div style="
+                        margin-top:10px;
+                        color:#087443;
+                        font-size:15px;
+                        font-weight:800;
+                    ">
+                        Excellent
+                    </div>
+
+                    <div style="
+                        margin-top:6px;
+                        color:#667085;
+                        font-size:10px;
+                    ">
+                        Outstanding performance
+                    </div>
+
+                {% elif submission.percentage >= 70 %}
+
+                    <div style="
+                        font-size:30px;
+                    ">
+                        ⭐
+                    </div>
+
+                    <div style="
+                        margin-top:10px;
+                        color:#087443;
+                        font-size:15px;
+                        font-weight:800;
+                    ">
+                        Good Performance
+                    </div>
+
+                    <div style="
+                        margin-top:6px;
+                        color:#667085;
+                        font-size:10px;
+                    ">
+                        Most concepts are covered
+                    </div>
+
+                {% elif submission.percentage >= 50 %}
+
+                    <div style="
+                        font-size:30px;
+                    ">
+                        👍
+                    </div>
+
+                    <div style="
+                        margin-top:10px;
+                        color:#b54708;
+                        font-size:15px;
+                        font-weight:800;
+                    ">
+                        Average
+                    </div>
+
+                    <div style="
+                        margin-top:6px;
+                        color:#667085;
+                        font-size:10px;
+                    ">
+                        Room for improvement
+                    </div>
+
+                {% else %}
+
+                    <div style="
+                        font-size:30px;
+                    ">
+                        📚
+                    </div>
+
+                    <div style="
+                        margin-top:10px;
+                        color:#b42318;
+                        font-size:15px;
+                        font-weight:800;
+                    ">
+                        Needs Improvement
+                    </div>
+
+                    <div style="
+                        margin-top:6px;
+                        color:#667085;
+                        font-size:10px;
+                    ">
+                        Review the feedback below
+                    </div>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+
+        <!-- QUESTIONS -->
+
+        <div style="
+            margin-top:35px;
+        ">
+
+            <div class="section-label">
+                QUESTION-WISE EVALUATION
+            </div>
+
+            <h2 style="
+                margin-top:8px;
+                font-family:Manrope,sans-serif;
+                font-size:24px;
+            ">
+                Detailed Feedback
+            </h2>
+
+        </div>
+
+
+        {% for evaluation in submission.evaluations %}
+
+        <div style="
+            margin-top:20px;
+            padding:28px;
+            border:1px solid #e5e7eb;
+            border-radius:22px;
+            background:white;
+            box-shadow:0 8px 25px rgba(16,24,40,.04);
+        ">
+
+
+            <!-- QUESTION HEADER -->
+
+            <div style="
+                display:flex;
+                justify-content:space-between;
+                align-items:center;
+                gap:20px;
+            ">
+
+                <div>
+
+                    <span style="
+                        display:inline-block;
+                        padding:6px 11px;
+                        border-radius:50px;
+                        background:#f0efff;
+                        color:#635bff;
+                        font-size:9px;
+                        font-weight:800;
+                    ">
+                        QUESTION
+                        {{ evaluation.question.question_number }}
+                    </span>
+
+                    <h3 style="
+                        margin-top:12px;
+                        font-family:Manrope,sans-serif;
+                        font-size:16px;
+                        color:#101828;
+                    ">
+                        {{ evaluation.question.question_text }}
+                    </h3>
+
+                </div>
+
+
+                <div style="
+                    min-width:95px;
+                    padding:12px;
+                    border-radius:14px;
+                    background:#ecfdf3;
+                    text-align:center;
+                ">
+
+                    <div style="
+                        color:#667085;
+                        font-size:9px;
+                    ">
+                        MARKS
+                    </div>
+
+                    <strong style="
+                        display:block;
+                        margin-top:4px;
+                        color:#087443;
+                        font-size:18px;
+                    ">
+                        {{ "%.2f"|format(evaluation.marks or 0) }}
+                        /
+                        {{ "%.2f"|format(evaluation.max_marks or 0) }}
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <!-- STUDENT ANSWER -->
+
+            <div style="
+                margin-top:24px;
+            ">
+
+                <div style="
+                    color:#667085;
+                    font-size:9px;
+                    font-weight:800;
+                    text-transform:uppercase;
+                    letter-spacing:.08em;
+                ">
+                    YOUR ANSWER
+                </div>
+
+                <div style="
+                    margin-top:10px;
+                    padding:18px;
+                    border-radius:14px;
+                    background:#f8f9fc;
+                    border:1px solid #eef0f4;
+                    color:#202532;
+                    font-size:12px;
+                    line-height:1.8;
+                    white-space:pre-wrap;
+                ">{% if evaluation.student_answer %}
+{{ evaluation.student_answer }}
+{% else %}
+No answer detected.
+{% endif %}</div>
+
+            </div>
+
+
+            <!-- FEEDBACK -->
+
+            <div style="
+                margin-top:18px;
+                padding:18px;
+                border-radius:14px;
+                background:#f0efff;
+            ">
+
+                <div style="
+                    color:#4b45a3;
+                    font-size:9px;
+                    font-weight:800;
+                    text-transform:uppercase;
+                ">
+                    AI FEEDBACK
+                </div>
+
+                <div style="
+                    margin-top:8px;
+                    color:#34307a;
+                    font-size:11px;
+                    line-height:1.7;
+                ">
+                    {{ evaluation.feedback }}
+                </div>
+
+            </div>
+
+
+            <!-- SCORE DETAILS -->
+
+            {% if evaluation.confidence is not none %}
+
+            <div style="
+                margin-top:18px;
+                display:flex;
+                justify-content:space-between;
+                align-items:center;
+                gap:15px;
+            ">
+
+                <span style="
+                    color:#667085;
+                    font-size:10px;
+                ">
+                    AI Evaluation Confidence
+                </span>
+
+                <strong style="
+                    color:#101828;
+                    font-size:11px;
+                ">
+                    {{ "%.1f"|format(evaluation.confidence) }}%
+                </strong>
+
+            </div>
+
+
+            <div style="
+                margin-top:8px;
+                height:6px;
+                border-radius:20px;
+                background:#eef0f4;
+                overflow:hidden;
+            ">
+
+                <div style="
+                    width:{{ evaluation.confidence }}%;
+                    height:100%;
+                    border-radius:20px;
+                    background:#635bff;
+                "></div>
+
+            </div>
+
+            {% endif %}
+
+        </div>
+
+        {% endfor %}
+
+
+        <!-- FINAL MESSAGE -->
+
+        <div style="
+            margin-top:30px;
+            padding:22px;
+            border-radius:18px;
+            background:#101828;
+            color:white;
+            text-align:center;
+        ">
+
+            <div style="
+                font-size:12px;
+                font-weight:800;
+            ">
+                AI EVALUATION COMPLETED
+            </div>
+
+            <div style="
+                margin-top:7px;
+                color:#d0d5dd;
+                font-size:10px;
+            ">
+                Your handwritten answers were evaluated
+                using semantic and contextual analysis.
+            </div>
+
+        </div>
+
+
+        {% else %}
+
+
+        <!-- NOT EVALUATED -->
+
+        <div style="
+            margin-top:35px;
+            padding:35px;
+            border-radius:22px;
+            background:white;
+            border:1px solid #e5e7eb;
+            text-align:center;
+        ">
+
+            <div style="
+                font-size:35px;
+            ">
+                ⏳
+            </div>
+
+            <h2 style="
+                margin-top:15px;
+                font-family:Manrope,sans-serif;
+                font-size:20px;
+            ">
+                Evaluation Pending
+            </h2>
+
+            <p style="
+                margin-top:8px;
+                color:#667085;
+                font-size:11px;
+            ">
+                Your answer sheet has not been evaluated yet.
+            </p>
+
+            <a
+                href="{{ url_for(
+                    'student.processing',
+                    submission_id=submission.id
+                ) }}"
+                class="btn btn-primary"
+                style="
+                    margin-top:20px;
+                "
+            >
+                Start Evaluation →
+            </a>
+
+        </div>
+
+        {% endif %}
+
+    </div>
+
+</section>
+
+{% endblock %}

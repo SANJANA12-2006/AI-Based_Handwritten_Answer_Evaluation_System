@@ -1,0 +1,589 @@
+{% extends "base.html" %}
+
+{% block title %}Add Questions — NoteGrade{% endblock %}
+
+{% block content %}
+
+<section style="
+    min-height:calc(100vh - 82px);
+    padding:130px 20px 80px;
+    background:#f8f9fc;
+">
+
+    <div class="container">
+
+        <a
+            href="{{ url_for('teacher.tests') }}"
+            style="
+                color:#667085;
+                font-size:12px;
+                text-decoration:none;
+            "
+        >
+            ← Back to Tests
+        </a>
+
+
+        <div style="
+            display:flex;
+            justify-content:space-between;
+            align-items:flex-start;
+            gap:25px;
+            flex-wrap:wrap;
+            margin-top:25px;
+        ">
+
+            <div>
+
+                <div class="section-label">
+                    TEST BUILDER
+                </div>
+
+                <h1 style="
+                    margin-top:10px;
+                    font-family:Manrope,sans-serif;
+                    font-size:34px;
+                    letter-spacing:-1px;
+                ">
+                    {{ test.title }}
+                </h1>
+
+                <p style="
+                    margin-top:7px;
+                    color:#667085;
+                    font-size:12px;
+                ">
+                    {{ test.assigned_class.name }}
+                </p>
+
+            </div>
+
+
+            <div style="
+                display:flex;
+                gap:10px;
+                align-items:center;
+            ">
+
+                <div style="
+                    padding:11px 15px;
+                    border-radius:12px;
+                    background:white;
+                    border:1px solid #e5e7eb;
+                    font-size:11px;
+                    color:#667085;
+                ">
+                    Questions:
+                    <strong style="color:#111827;">
+                        {{ questions|length }}
+                    </strong>
+                </div>
+
+                <div style="
+                    padding:11px 15px;
+                    border-radius:12px;
+                    background:white;
+                    border:1px solid #e5e7eb;
+                    font-size:11px;
+                    color:#667085;
+                ">
+                    Marks:
+                    <strong style="color:#111827;">
+                        {{ test.total_marks }}
+                    </strong>
+                </div>
+
+            </div>
+
+        </div>
+
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+
+            {% if messages %}
+
+                <div style="margin-top:25px;">
+
+                    {% for category, message in messages %}
+
+                    <div style="
+                        padding:12px 15px;
+                        border-radius:10px;
+                        font-size:12px;
+                        margin-bottom:10px;
+
+                        {% if category == 'error' %}
+                        color:#b42318;
+                        background:#fef3f2;
+                        border:1px solid #fecdca;
+                        {% else %}
+                        color:#087443;
+                        background:#ecfdf3;
+                        border:1px solid #abefc6;
+                        {% endif %}
+                    ">
+                        {{ message }}
+                    </div>
+
+                    {% endfor %}
+
+                </div>
+
+            {% endif %}
+
+        {% endwith %}
+
+
+        <div style="
+            margin-top:28px;
+            padding:28px;
+            border:1px solid #dfe3ea;
+            border-radius:20px;
+            background:#fff;
+            box-shadow:0 8px 30px rgba(16,24,40,.04);
+        ">
+
+            <div style="display:flex; justify-content:space-between; gap:20px; align-items:flex-start; flex-wrap:wrap;">
+                <div>
+                    <div class="section-label">BULK QUESTION PAPER</div>
+                    <h2 style="margin-top:8px; font-family:Manrope,sans-serif; font-size:19px;">
+                        Upload the complete test PDFs
+                    </h2>
+                    <p style="margin-top:6px; color:#667085; font-size:11px; line-height:1.7;">
+                        Upload one numbered question-paper PDF and one numbered answer-key PDF.
+                        Questions and answers must use matching numbers such as 1, 2, 3.
+                    </p>
+                </div>
+                <span style="padding:6px 10px; border-radius:50px; background:#f0efff; color:#635bff; font-size:9px; font-weight:800;">
+                    PDF ONLY
+                </span>
+            </div>
+
+            <form method="POST" enctype="multipart/form-data" action="{{ url_for('teacher.add_questions_bulk', test_id=test.id) }}" style="margin-top:20px;">
+                <div style="display:grid; grid-template-columns:1fr 1fr 180px; gap:16px; align-items:end;">
+                    <div>
+                        <label class="form-label">Question Paper PDF *</label>
+                        <input type="file" name="bulk_question_paper" accept="application/pdf,.pdf" class="form-input" style="padding:11px;" required>
+                    </div>
+
+                    <div>
+                        <label class="form-label">Answer Key PDF *</label>
+                        <input type="file" name="bulk_answer_key" accept="application/pdf,.pdf" class="form-input" style="padding:11px;" required>
+                    </div>
+
+                    <div>
+                        <label class="form-label">Marks Per Question *</label>
+                        <input type="number" name="bulk_max_marks" class="form-input" min="0.5" step="0.5" placeholder="Example: 5" required>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="margin-top:18px; height:46px;">
+                    Import All Questions →
+                </button>
+            </form>
+
+        </div>
+
+
+        <div style="
+            display:grid;
+            grid-template-columns:1fr 1fr;
+            gap:22px;
+            margin-top:28px;
+            align-items:start;
+        ">
+
+
+            <!-- ADD QUESTION -->
+
+            <div style="
+                padding:28px;
+                border:1px solid #e5e7eb;
+                border-radius:20px;
+                background:white;
+                box-shadow:0 8px 30px rgba(16,24,40,.04);
+            ">
+
+                <h2 style="
+                    font-family:Manrope,sans-serif;
+                    font-size:19px;
+                ">
+                    Add Question
+                </h2>
+
+                <p style="
+                    margin-top:6px;
+                    color:#667085;
+                    font-size:11px;
+                ">
+                    Add the question and the ideal answer that
+                    the AI will use during evaluation.
+                </p>
+
+
+                <form
+                    method="POST"
+                    enctype="multipart/form-data"
+                    style="margin-top:22px;"
+                >
+
+                    <div style="margin-bottom:17px;">
+
+                        <label class="form-label">
+                            Question *
+                        </label>
+
+                        <textarea
+                            name="question_text"
+                            class="form-input"
+                            placeholder="Enter the question or leave blank if using uploaded question image..."
+                            style="
+                                height:130px;
+                                padding:13px;
+                                resize:vertical;
+                            "
+                        ></textarea>
+
+                    </div>
+
+                    <div style="margin-bottom:17px;">
+                        <label class="form-label">
+                            Upload Question Image/PDF
+                        </label>
+                        <input
+                            type="file"
+                            name="question_source"
+                            accept=".jpg,.jpeg,.png,.webp,.pdf"
+                            class="form-input"
+                            style="padding:11px;"
+                        >
+                        <small style="display:block; margin-top:6px; color:#667085; font-size:10px;">
+                            OCR will extract the question text from the uploaded image or PDF.
+                        </small>
+                    </div>
+
+                    <div style="margin-bottom:17px;">
+                        <label class="form-label">
+                            Upload Answer Image/PDF
+                        </label>
+                        <input
+                            type="file"
+                            name="answer_source"
+                            accept=".jpg,.jpeg,.png,.webp,.pdf"
+                            class="form-input"
+                            style="padding:11px;"
+                        >
+                        <small style="display:block; margin-top:6px; color:#667085; font-size:10px;">
+                            OCR will extract the reference answer if you prefer to upload it instead of typing it.
+                        </small>
+                    </div>
+
+
+                    <div style="margin-bottom:17px;">
+
+                        <label class="form-label">
+                            Key Answer *
+                        </label>
+
+                        <textarea
+                            name="key_answer"
+                            class="form-input"
+                            placeholder="Enter the ideal/reference answer..."
+                            style="
+                                height:150px;
+                                padding:13px;
+                                resize:vertical;
+                            "
+                        ></textarea>
+
+                    </div>
+
+
+                    <div style="margin-bottom:17px;">
+
+                        <label class="form-label">
+                            Maximum Marks *
+                        </label>
+
+                        <input
+                            type="number"
+                            name="max_marks"
+                            class="form-input"
+                            placeholder="Example: 5"
+                            min="0.5"
+                            step="0.5"
+                            required
+                        >
+
+                    </div>
+
+
+                    <button
+                        type="submit"
+                        class="btn btn-primary"
+                        style="
+                            width:100%;
+                            height:46px;
+                        "
+                    >
+                        + Add Question
+                    </button>
+
+                </form>
+
+            </div>
+
+
+            <!-- QUESTIONS -->
+
+            <div>
+
+                <div style="
+                    display:flex;
+                    justify-content:space-between;
+                    align-items:center;
+                    margin-bottom:13px;
+                ">
+
+                    <h2 style="
+                        font-family:Manrope,sans-serif;
+                        font-size:19px;
+                    ">
+                        Questions
+                    </h2>
+
+                </div>
+
+
+                {% if questions %}
+
+                    {% for question in questions %}
+
+                    <div style="
+                        padding:20px;
+                        margin-bottom:12px;
+                        border:1px solid #e5e7eb;
+                        border-radius:16px;
+                        background:white;
+                    ">
+
+                        <div style="
+                            display:flex;
+                            justify-content:space-between;
+                            gap:10px;
+                        ">
+
+                            <span style="
+                                width:30px;
+                                height:30px;
+                                display:flex;
+                                align-items:center;
+                                justify-content:center;
+                                border-radius:9px;
+                                background:#f0efff;
+                                color:#635bff;
+                                font-weight:800;
+                                font-size:11px;
+                            ">
+                                Q{{ question.question_number }}
+                            </span>
+
+                            <span style="
+                                padding:5px 9px;
+                                border-radius:50px;
+                                background:#f8f9fc;
+                                color:#667085;
+                                font-size:10px;
+                                font-weight:700;
+                            ">
+                                {{ question.max_marks }} Marks
+                            </span>
+
+                        </div>
+
+
+                        <p style="
+                            margin-top:15px;
+                            color:#202532;
+                            font-size:12px;
+                            line-height:1.7;
+                        ">
+                            {{ question.question_text }}
+                        </p>
+
+                        {% if question.source_path %}
+                        <div style="margin-top:14px;">
+                            <div style="
+                                color:#667085;
+                                font-size:9px;
+                                font-weight:800;
+                                letter-spacing:.07em;
+                                margin-bottom:8px;
+                            ">
+                                SOURCE FILE
+                            </div>
+
+                            {% if question.source_type in ['image', 'pdf'] %}
+                                {% if question.source_type == 'pdf' %}
+                                    <div style="padding:12px; border-radius:12px; background:#f8fafc; border:1px solid #e5e7eb; color:#667085; font-size:10px;">
+                                        PDF uploaded: {{ question.source_filename or 'question-source.pdf' }}
+                                    </div>
+                                {% else %}
+                                    <img
+                                        src="{{ question.source_url }}"
+                                        alt="Question source"
+                                        style="
+                                            width:100%;
+                                            max-height:260px;
+                                            object-fit:contain;
+                                            border:1px solid #e5e7eb;
+                                            border-radius:12px;
+                                            background:#f8fafc;
+                                        "
+                                    >
+                                {% endif %}
+                            {% endif %}
+                        </div>
+                        {% endif %}
+
+                        {% if question.extracted_text %}
+                        <div style="
+                            margin-top:14px;
+                            padding:12px;
+                            border-radius:10px;
+                            background:#f8fafc;
+                            color:#667085;
+                            font-size:10px;
+                            line-height:1.6;
+                        ">
+                            <strong style="color:#374151;">
+                                OCR Extracted Text:
+                            </strong>
+                            <br>
+                            {{ question.extracted_text }}
+                        </div>
+                        {% endif %}
+
+                        <div style="
+                            margin-top:14px;
+                            padding:12px;
+                            border-radius:10px;
+                            background:#f8fafc;
+                            color:#667085;
+                            font-size:10px;
+                            line-height:1.6;
+                        ">
+
+                            <strong style="color:#374151;">
+                                Key Answer:
+                            </strong>
+
+                            <br>
+
+                            {{ question.key_answer }}
+
+                        </div>
+
+                    </div>
+
+                    {% endfor %}
+
+                {% else %}
+
+                    <div style="
+                        padding:50px 25px;
+                        border:1px dashed #d8dce5;
+                        border-radius:18px;
+                        background:white;
+                        text-align:center;
+                    ">
+
+                        <div style="font-size:35px;">
+                            ❓
+                        </div>
+
+                        <h3 style="
+                            margin-top:12px;
+                            font-family:Manrope,sans-serif;
+                            font-size:17px;
+                        ">
+                            No questions yet
+                        </h3>
+
+                        <p style="
+                            margin-top:6px;
+                            color:#667085;
+                            font-size:11px;
+                        ">
+                            Add your first question using the form.
+                        </p>
+
+                    </div>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+
+        {% if questions %}
+
+        <div style="
+            margin-top:25px;
+            padding:22px;
+            border:1px solid #dfe3ea;
+            border-radius:18px;
+            background:white;
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            gap:20px;
+            flex-wrap:wrap;
+        ">
+
+            <div>
+
+                <h3 style="
+                    font-family:Manrope,sans-serif;
+                    font-size:16px;
+                ">
+                    Ready to publish?
+                </h3>
+
+                <p style="
+                    margin-top:5px;
+                    color:#667085;
+                    font-size:11px;
+                ">
+                    {{ questions|length }} question(s) ·
+                    {{ test.total_marks }} total marks
+                </p>
+
+            </div>
+
+
+            <form
+                method="POST"
+                action="{{ url_for('teacher.publish_test', test_id=test.id) }}"
+            >
+
+                <button
+                    type="submit"
+                    class="btn btn-primary"
+                    onclick="return confirm('Publish this test? Students will be able to access it immediately.');"
+                >
+                    🚀 Publish Test
+                </button>
+
+            </form>
+
+        </div>
+
+        {% endif %}
+
+    </div>
+
+</section>
+
+{% endblock %}

@@ -1,0 +1,256 @@
+{% extends "base.html" %}
+
+{% block title %}Available Tests — NoteGrade{% endblock %}
+
+{% block content %}
+
+<section style="
+    min-height:calc(100vh - 82px);
+    padding:130px 20px 80px;
+    background:#f8f9fc;
+">
+
+    <div class="container">
+
+        <div style="
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            flex-wrap:wrap;
+            gap:20px;
+        ">
+
+            <div>
+
+                <div class="section-label">
+                    STUDENT PORTAL
+                </div>
+
+                <h1 style="
+                    margin-top:10px;
+                    font-family:Manrope,sans-serif;
+                    font-size:34px;
+                ">
+                    Available Tests
+                </h1>
+
+                <p style="
+                    margin-top:7px;
+                    color:#667085;
+                    font-size:13px;
+                ">
+                    Tests published for {{ current_user.student_class.name
+                    if current_user.student_class else "your class" }}.
+                </p>
+
+            </div>
+
+            <a
+                href="{{ url_for('student.dashboard') }}"
+                class="btn btn-outline"
+            >
+                ← Dashboard
+            </a>
+
+        </div>
+
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+
+            {% if messages %}
+
+                <div style="margin-top:25px;">
+
+                    {% for category, message in messages %}
+
+                    <div style="
+                        padding:12px 15px;
+                        border-radius:10px;
+                        margin-bottom:10px;
+                        font-size:12px;
+
+                        {% if category == 'error' %}
+                        color:#b42318;
+                        background:#fef3f2;
+                        border:1px solid #fecdca;
+                        {% else %}
+                        color:#087443;
+                        background:#ecfdf3;
+                        border:1px solid #abefc6;
+                        {% endif %}
+                    ">
+                        {{ message }}
+                    </div>
+
+                    {% endfor %}
+
+                </div>
+
+            {% endif %}
+
+        {% endwith %}
+
+
+        <div style="
+            display:grid;
+            grid-template-columns:repeat(2,1fr);
+            gap:18px;
+            margin-top:30px;
+        ">
+
+            {% if tests %}
+
+                {% for test in tests %}
+
+                <div style="
+                    padding:26px;
+                    border:1px solid #e5e7eb;
+                    border-radius:20px;
+                    background:white;
+                    box-shadow:0 8px 25px rgba(16,24,40,.04);
+                    transition:.25s ease;
+                ">
+
+                    <div style="
+                        display:flex;
+                        justify-content:space-between;
+                        align-items:flex-start;
+                        gap:15px;
+                    ">
+
+                        <div style="
+                            width:48px;
+                            height:48px;
+                            display:flex;
+                            align-items:center;
+                            justify-content:center;
+                            border-radius:14px;
+                            background:#f0efff;
+                            font-size:21px;
+                        ">
+                            📝
+                        </div>
+
+                        <span style="
+                            padding:6px 10px;
+                            border-radius:50px;
+                            background:#ecfdf3;
+                            color:#087443;
+                            font-size:9px;
+                            font-weight:800;
+                        ">
+                            AVAILABLE
+                        </span>
+
+                    </div>
+
+
+                    <h2 style="
+                        margin-top:20px;
+                        font-family:Manrope,sans-serif;
+                        font-size:19px;
+                    ">
+                        {{ test.title }}
+                    </h2>
+
+
+                    <p style="
+                        margin-top:7px;
+                        color:#667085;
+                        font-size:11px;
+                        line-height:1.7;
+                    ">
+                        {{ test.description or
+                           "Complete this test and submit your handwritten answers for evaluation." }}
+                    </p>
+
+
+                    <div style="
+                        display:flex;
+                        gap:18px;
+                        flex-wrap:wrap;
+                        margin-top:20px;
+                        padding-top:17px;
+                        border-top:1px solid #eef0f4;
+                        color:#667085;
+                        font-size:10px;
+                    ">
+
+                        <span>
+                            ❓ {{ test.questions|length }} Questions
+                        </span>
+
+                        <span>
+                            🏆 {{ test.total_marks }} Marks
+                        </span>
+
+                        {% if test.duration %}
+
+                        <span>
+                            ⏱ {{ test.duration }} Min
+                        </span>
+
+                        {% endif %}
+
+                    </div>
+
+
+                    <a
+                        href="{{ url_for('student.test_details', test_id=test.id) }}"
+                        class="btn btn-primary"
+                        style="
+                            width:100%;
+                            margin-top:22px;
+                            text-align:center;
+                        "
+                    >
+                        View Test →
+                    </a>
+
+                </div>
+
+                {% endfor %}
+
+            {% else %}
+
+                <div style="
+                    grid-column:1/-1;
+                    padding:70px 30px;
+                    border:1px dashed #d8dce5;
+                    border-radius:20px;
+                    background:white;
+                    text-align:center;
+                ">
+
+                    <div style="font-size:45px;">
+                        📚
+                    </div>
+
+                    <h2 style="
+                        margin-top:15px;
+                        font-family:Manrope,sans-serif;
+                        font-size:21px;
+                    ">
+                        No tests available
+                    </h2>
+
+                    <p style="
+                        margin-top:8px;
+                        color:#667085;
+                        font-size:12px;
+                    ">
+                        Your teacher hasn't published any tests for
+                        your class yet.
+                    </p>
+
+                </div>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endblock %}

@@ -1,0 +1,230 @@
+{% extends "base.html" %}
+
+{% block title %}Create Test — NoteGrade{% endblock %}
+
+{% block content %}
+
+<section style="
+    min-height:calc(100vh - 82px);
+    padding:130px 20px 80px;
+    background:#f8f9fc;
+">
+
+    <div style="
+        width:100%;
+        max-width:760px;
+        margin:auto;
+    ">
+
+        <a
+            href="{{ url_for('teacher.tests') }}"
+            style="
+                color:#667085;
+                font-size:12px;
+                text-decoration:none;
+            "
+        >
+            ← Back to Tests
+        </a>
+
+
+        <div style="margin-top:25px;">
+
+            <div class="section-label">
+                CREATE TEST
+            </div>
+
+            <h1 style="
+                margin-top:10px;
+                font-family:Manrope,sans-serif;
+                font-size:35px;
+                letter-spacing:-1px;
+            ">
+                Create a new test
+            </h1>
+
+            <p style="
+                margin-top:7px;
+                color:#667085;
+                font-size:13px;
+            ">
+                Define the test information before adding questions.
+            </p>
+
+        </div>
+
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+
+            {% if messages %}
+
+                <div style="margin-top:25px;">
+
+                    {% for category, message in messages %}
+
+                    <div style="
+                        padding:12px 15px;
+                        border-radius:10px;
+                        font-size:12px;
+                        margin-bottom:10px;
+
+                        {% if category == 'error' %}
+                        color:#b42318;
+                        background:#fef3f2;
+                        border:1px solid #fecdca;
+                        {% else %}
+                        color:#087443;
+                        background:#ecfdf3;
+                        border:1px solid #abefc6;
+                        {% endif %}
+                    ">
+                        {{ message }}
+                    </div>
+
+                    {% endfor %}
+
+                </div>
+
+            {% endif %}
+
+        {% endwith %}
+
+
+        <div style="
+            margin-top:28px;
+            padding:32px;
+            border:1px solid #e5e7eb;
+            border-radius:22px;
+            background:white;
+            box-shadow:0 10px 35px rgba(16,24,40,.05);
+        ">
+
+            <form method="POST">
+
+                <div style="margin-bottom:20px;">
+
+                    <label class="form-label">
+                        Test Title *
+                    </label>
+
+                    <input
+                        type="text"
+                        name="title"
+                        class="form-input"
+                        placeholder="Example: Unit 1 — Introduction to JavaScript"
+                        required
+                    >
+
+                </div>
+
+
+                <div style="margin-bottom:20px;">
+
+                    <label class="form-label">
+                        Description
+                    </label>
+
+                    <textarea
+                        name="description"
+                        class="form-input"
+                        placeholder="Briefly describe this test..."
+                        style="
+                            height:110px;
+                            padding:13px;
+                            resize:vertical;
+                        "
+                    ></textarea>
+
+                </div>
+
+
+                <div style="
+                    display:grid;
+                    grid-template-columns:1fr 1fr;
+                    gap:16px;
+                ">
+
+                    <div>
+
+                        <label class="form-label">
+                            Select Semester *
+                        </label>
+
+                        <select
+                            name="class_id"
+                            class="form-select"
+                            required
+                        >
+
+                            <option value="">
+                                Choose semester
+                            </option>
+
+                            {% for class in classes %}
+
+                            <option value="{{ class.id }}">
+                                {{ class.name|replace("BCA - ", "") }}
+                            </option>
+
+                            {% endfor %}
+
+                        </select>
+
+                    </div>
+
+
+                    <div>
+
+                        <label class="form-label">
+                            Duration
+                        </label>
+
+                        <input
+                            type="number"
+                            name="duration"
+                            class="form-input"
+                            placeholder="Minutes"
+                            min="1"
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <div style="
+                    margin-top:25px;
+                    padding:15px;
+                    border-radius:12px;
+                    background:#f7f7ff;
+                    border:1px solid #ecebff;
+                    color:#626b7c;
+                    font-size:11px;
+                    line-height:1.7;
+                ">
+                    💡 After creating the test, you'll be able to add
+                    each question, its key answer and maximum marks.
+                </div>
+
+
+                <button
+                    type="submit"
+                    class="btn btn-primary"
+                    style="
+                        width:100%;
+                        height:48px;
+                        margin-top:25px;
+                    "
+                >
+                    Create Test & Continue →
+                </button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endblock %}

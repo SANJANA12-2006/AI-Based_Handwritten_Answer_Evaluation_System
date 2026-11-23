@@ -1,0 +1,285 @@
+{% extends "base.html" %}
+
+{% block title %}{{ test.title }} — NoteGrade{% endblock %}
+
+{% block content %}
+
+<section style="
+    min-height:calc(100vh - 82px);
+    padding:130px 20px 80px;
+    background:#f8f9fc;
+">
+
+    <div style="
+        width:100%;
+        max-width:900px;
+        margin:auto;
+    ">
+
+        <a
+            href="{{ url_for('student.tests') }}"
+            style="
+                color:#667085;
+                font-size:12px;
+                text-decoration:none;
+            "
+        >
+            ← Back to Tests
+        </a>
+
+
+        <div style="
+            margin-top:25px;
+            padding:32px;
+            border-radius:22px;
+            background:white;
+            border:1px solid #e5e7eb;
+            box-shadow:0 10px 35px rgba(16,24,40,.05);
+        ">
+
+            <div class="section-label">
+                TEST DETAILS
+            </div>
+
+            <h1 style="
+                margin-top:10px;
+                font-family:Manrope,sans-serif;
+                font-size:32px;
+                letter-spacing:-1px;
+            ">
+                {{ test.title }}
+            </h1>
+
+            <p style="
+                margin-top:8px;
+                color:#667085;
+                font-size:12px;
+                line-height:1.7;
+            ">
+                {{ test.description or "No description provided." }}
+            </p>
+
+
+            <div style="
+                display:flex;
+                gap:12px;
+                flex-wrap:wrap;
+                margin-top:22px;
+            ">
+
+                <div style="
+                    padding:10px 14px;
+                    border-radius:10px;
+                    background:#f8f9fc;
+                    font-size:10px;
+                    color:#667085;
+                ">
+                    🎓 {{ test.assigned_class.name }}
+                </div>
+
+                <div style="
+                    padding:10px 14px;
+                    border-radius:10px;
+                    background:#f8f9fc;
+                    font-size:10px;
+                    color:#667085;
+                ">
+                    ❓ {{ test.questions|length }} Questions
+                </div>
+
+                <div style="
+                    padding:10px 14px;
+                    border-radius:10px;
+                    background:#f8f9fc;
+                    font-size:10px;
+                    color:#667085;
+                ">
+                    🏆 {{ test.total_marks }} Marks
+                </div>
+
+                {% if test.duration %}
+
+                <div style="
+                    padding:10px 14px;
+                    border-radius:10px;
+                    background:#f8f9fc;
+                    font-size:10px;
+                    color:#667085;
+                ">
+                    ⏱ {{ test.duration }} Minutes
+                </div>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+
+        <div style="margin-top:28px;">
+
+            <div style="
+                display:flex;
+                justify-content:space-between;
+                align-items:center;
+                margin-bottom:15px;
+            ">
+
+                <h2 style="
+                    font-family:Manrope,sans-serif;
+                    font-size:20px;
+                ">
+                    Questions
+                </h2>
+
+                <span style="
+                    color:#667085;
+                    font-size:11px;
+                ">
+                    {{ test.questions|length }} questions
+                </span>
+
+            </div>
+
+
+            {% for question in test.questions %}
+
+            <div style="
+                margin-bottom:15px;
+                padding:25px;
+                border:1px solid #e5e7eb;
+                border-radius:18px;
+                background:white;
+            ">
+
+                <div style="
+                    display:flex;
+                    justify-content:space-between;
+                    align-items:center;
+                    gap:15px;
+                ">
+
+                    <span style="
+                        width:34px;
+                        height:34px;
+                        display:flex;
+                        align-items:center;
+                        justify-content:center;
+                        border-radius:10px;
+                        background:#f0efff;
+                        color:#635bff;
+                        font-size:11px;
+                        font-weight:800;
+                    ">
+                        Q{{ question.question_number }}
+                    </span>
+
+                    <span style="
+                        padding:6px 10px;
+                        border-radius:50px;
+                        background:#f8f9fc;
+                        color:#667085;
+                        font-size:10px;
+                        font-weight:700;
+                    ">
+                        {{ question.max_marks }} Marks
+                    </span>
+
+                </div>
+
+
+                <p style="
+                    margin-top:17px;
+                    color:#202532;
+                    font-size:13px;
+                    line-height:1.8;
+                ">
+                    {{ question.question_text }}
+                </p>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+
+        {% if existing_submission %}
+
+        <div style="
+            margin-top:25px;
+            padding:24px;
+            border-radius:18px;
+            background:#ecfdf3;
+            border:1px solid #abefc6;
+        ">
+
+            <h3 style="
+                color:#087443;
+                font-family:Manrope,sans-serif;
+                font-size:17px;
+            ">
+                ✓ Test Already Submitted
+            </h3>
+
+            <p style="
+                margin-top:6px;
+                color:#4b6357;
+                font-size:11px;
+            ">
+                Your answer sheets have already been submitted.
+            </p>
+
+        </div>
+
+        {% else %}
+
+        <div style="
+            margin-top:25px;
+            padding:28px;
+            border-radius:20px;
+            background:white;
+            border:1px solid #e5e7eb;
+            text-align:center;
+        ">
+
+            <div style="font-size:38px;">
+                ✍️
+            </div>
+
+            <h2 style="
+                margin-top:12px;
+                font-family:Manrope,sans-serif;
+                font-size:20px;
+            ">
+                Ready to submit your answers?
+            </h2>
+
+            <p style="
+                max-width:500px;
+                margin:8px auto 0;
+                color:#667085;
+                font-size:11px;
+                line-height:1.7;
+            ">
+                Write your answers clearly on paper, take clear
+                photographs of every page and upload them.
+            </p>
+
+            <a
+                href="{{ url_for('student.upload_page', test_id=test.id) }}"
+                class="btn btn-primary"
+                style="margin-top:20px;"
+            >
+                Upload Answer Sheets →
+            </a>
+
+        </div>
+
+        {% endif %}
+
+    </div>
+
+</section>
+
+{% endblock %}

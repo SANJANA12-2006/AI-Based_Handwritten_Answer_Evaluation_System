@@ -1,0 +1,321 @@
+{% extends "base.html" %}
+
+{% block title %}Upload Answer Sheets — NoteGrade{% endblock %}
+
+{% block content %}
+
+<section style="
+    min-height:calc(100vh - 82px);
+    padding:130px 20px 80px;
+    background:#f8f9fc;
+">
+
+    <div style="
+        width:100%;
+        max-width:700px;
+        margin:auto;
+    ">
+
+        <a
+            href="{{ url_for('student.test_details', test_id=test.id) }}"
+            style="
+                color:#667085;
+                font-size:12px;
+                text-decoration:none;
+            "
+        >
+            ← Back to Test
+        </a>
+
+
+        <div style="
+            margin-top:25px;
+            text-align:center;
+        ">
+
+            <div class="section-label"
+                 style="justify-content:center;">
+                SUBMIT ANSWERS
+            </div>
+
+            <h1 style="
+                margin-top:10px;
+                font-family:Manrope,sans-serif;
+                font-size:32px;
+                letter-spacing:-1px;
+            ">
+                Upload your handwritten answers
+            </h1>
+
+            <p style="
+                max-width:550px;
+                margin:9px auto 0;
+                color:#667085;
+                font-size:12px;
+                line-height:1.7;
+            ">
+                Upload clear photographs or a PDF of your answer sheets.
+                Our system will process every page for evaluation.
+            </p>
+
+        </div>
+
+
+        <form
+            method="POST"
+            action="{{ url_for('student.upload_answers', test_id=test.id) }}"
+            enctype="multipart/form-data"
+            style="margin-top:30px;"
+        >
+
+            <div
+                id="dropZone"
+                style="
+                    padding:55px 30px;
+                    border:2px dashed #cfd4df;
+                    border-radius:22px;
+                    background:white;
+                    text-align:center;
+                    transition:.2s ease;
+                    cursor:pointer;
+                "
+            >
+
+                <div style="
+                    width:70px;
+                    height:70px;
+                    margin:auto;
+                    display:flex;
+                    align-items:center;
+                    justify-content:center;
+                    border-radius:20px;
+                    background:#f0efff;
+                    font-size:30px;
+                ">
+                    📄
+                </div>
+
+
+                <h2 style="
+                    margin-top:20px;
+                    font-family:Manrope,sans-serif;
+                    font-size:19px;
+                ">
+                    Select your answer sheets
+                </h2>
+
+
+                <p style="
+                    margin-top:7px;
+                    color:#667085;
+                    font-size:11px;
+                ">
+                    JPG, JPEG, PNG, WEBP or PDF
+                </p>
+
+
+                <label
+                    for="answerSheets"
+                    class="btn btn-outline"
+                    style="
+                        margin-top:20px;
+                        cursor:pointer;
+                    "
+                >
+                    Choose Files
+                </label>
+
+
+                <input
+                    type="file"
+                    id="answerSheets"
+                    name="answer_sheets"
+                    accept="image/jpeg,image/png,image/webp,application/pdf"
+                    multiple
+                    required
+                    style="display:none;"
+                >
+
+            </div>
+
+
+            <div
+                id="fileList"
+                style="
+                    margin-top:15px;
+                "
+            ></div>
+
+
+            <div style="
+                margin-top:20px;
+                padding:18px;
+                border-radius:14px;
+                background:#fffaf0;
+                border:1px solid #f4dfb2;
+                color:#795c1f;
+                font-size:10px;
+                line-height:1.8;
+            ">
+
+                <strong>📌 For best evaluation:</strong>
+
+                <br>
+
+                • Make sure the complete page is visible.
+
+                <br>
+
+                • Avoid shadows and glare.
+
+                <br>
+
+                • Keep the camera directly above the paper.
+
+                <br>
+
+                • Make sure handwriting is clearly visible.
+
+                <br>
+
+                • Upload pages in the correct order.
+
+            </div>
+
+
+            <button
+                type="submit"
+                class="btn btn-primary"
+                style="
+                    width:100%;
+                    height:50px;
+                    margin-top:22px;
+                "
+            >
+                Submit Answer Sheets →
+            </button>
+
+        </form>
+
+    </div>
+
+</section>
+
+
+<script>
+
+const input = document.getElementById("answerSheets");
+const fileList = document.getElementById("fileList");
+const dropZone = document.getElementById("dropZone");
+
+input.addEventListener("change", function () {
+
+    fileList.innerHTML = "";
+
+    if (!this.files.length) {
+        return;
+    }
+
+    const wrapper = document.createElement("div");
+
+    wrapper.style.cssText = `
+        padding:15px;
+        border:1px solid #e5e7eb;
+        border-radius:14px;
+        background:white;
+    `;
+
+    const title = document.createElement("div");
+
+    title.innerHTML = `
+        <strong style="
+            font-family:Manrope,sans-serif;
+            font-size:12px;
+        ">
+            ${this.files.length} page(s) selected
+        </strong>
+    `;
+
+    wrapper.appendChild(title);
+
+
+    Array.from(this.files).forEach((file, index) => {
+
+        const item = document.createElement("div");
+
+        item.style.cssText = `
+            display:flex;
+            align-items:center;
+            gap:10px;
+            margin-top:10px;
+            padding-top:10px;
+            border-top:1px solid #f0f1f4;
+            color:#667085;
+            font-size:10px;
+        `;
+
+        item.innerHTML = `
+            <span style="
+                width:24px;
+                height:24px;
+                display:flex;
+                align-items:center;
+                justify-content:center;
+                border-radius:7px;
+                background:#f0efff;
+                color:#635bff;
+                font-weight:800;
+            ">
+                ${index + 1}
+            </span>
+
+            <span>
+                ${file.name}
+            </span>
+        `;
+
+        wrapper.appendChild(item);
+
+    });
+
+    fileList.appendChild(wrapper);
+
+});
+
+
+dropZone.addEventListener("dragover", function (event) {
+
+    event.preventDefault();
+
+    this.style.borderColor = "#635bff";
+    this.style.background = "#fafaff";
+
+});
+
+
+dropZone.addEventListener("dragleave", function () {
+
+    this.style.borderColor = "#cfd4df";
+    this.style.background = "white";
+
+});
+
+
+dropZone.addEventListener("drop", function (event) {
+
+    event.preventDefault();
+
+    this.style.borderColor = "#cfd4df";
+    this.style.background = "white";
+
+    input.files = event.dataTransfer.files;
+
+    input.dispatchEvent(
+        new Event("change")
+    );
+
+});
+
+</script>
+
+{% endblock %}

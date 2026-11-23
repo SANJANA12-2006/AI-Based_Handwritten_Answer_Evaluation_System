@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block title %}{{ test.title }} — NoteGrade{% endblock %}
+
+{% block content %}
+
+<section style="
+    min-height:calc(100vh - 82px);
+    padding:130px 20px 80px;
+    background:#f8f9fc;
+">
+
+    <div style="width:100%; max-width:900px; margin:auto;">
+
+        <a href="{{ url_for('teacher.tests') }}" style="color:#667085; font-size:12px; text-decoration:none;">
+            ← Back to Tests
+        </a>
+
+        <div style="margin-top:25px; padding:32px; border:1px solid #e5e7eb; border-radius:22px; background:white; box-shadow:0 10px 35px rgba(16,24,40,.05);">
+
+            <div class="section-label">TEST DETAILS</div>
+
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:20px; flex-wrap:wrap; margin-top:10px;">
+                <div>
+                    <h1 style="font-family:Manrope,sans-serif; font-size:32px;">{{ test.title }}</h1>
+                    <p style="margin-top:8px; color:#667085; font-size:12px; line-height:1.7;">
+                        {{ test.description or "No description provided." }}
+                    </p>
+                </div>
+
+                <span style="padding:7px 11px; border-radius:50px; background:{% if test.status == 'published' %}#ecfdf3{% else %}#fff7ed{% endif %}; color:{% if test.status == 'published' %}#087443{% else %}#c2410c{% endif %}; font-size:9px; font-weight:800;">
+                    {{ test.status|upper }}
+                </span>
+            </div>
+
+            <div style="display:flex; gap:12px; flex-wrap:wrap; margin-top:22px; color:#667085; font-size:10px;">
+                <span style="padding:10px 14px; border-radius:10px; background:#f8f9fc;">Semester: {{ test.assigned_class.name|replace("BCA - ", "") }}</span>
+                <span style="padding:10px 14px; border-radius:10px; background:#f8f9fc;">{{ test.questions|length }} Questions</span>
+                <span style="padding:10px 14px; border-radius:10px; background:#f8f9fc;">{{ test.total_marks }} Marks</span>
+                {% if test.duration %}
+                <span style="padding:10px 14px; border-radius:10px; background:#f8f9fc;">{{ test.duration }} Minutes</span>
+                {% endif %}
+            </div>
+        </div>
+
+        <div style="margin-top:28px;">
+            <h2 style="font-family:Manrope,sans-serif; font-size:20px;">Questions</h2>
+
+            {% for question in test.questions|sort(attribute='question_number') %}
+            <div style="margin-top:15px; padding:25px; border:1px solid #e5e7eb; border-radius:18px; background:white;">
+                <div style="display:flex; justify-content:space-between; gap:15px; align-items:center;">
+                    <strong style="color:#635bff; font-size:12px;">Question {{ question.question_number }}</strong>
+                    <span style="padding:6px 10px; border-radius:50px; background:#f8f9fc; color:#667085; font-size:10px;">{{ question.max_marks }} Marks</span>
+                </div>
+
+                <p style="margin-top:17px; color:#202532; font-size:13px; line-height:1.8; white-space:pre-wrap;">{{ question.question_text }}</p>
+
+                <div style="margin-top:18px; padding:15px; border-radius:12px; background:#f8f9fc; color:#344054; font-size:11px; line-height:1.8; white-space:pre-wrap;">
+                    <strong>Key Answer</strong><br>
+                    {{ question.key_answer }}
+                </div>
+            </div>
+            {% else %}
+            <div style="margin-top:15px; padding:40px; border:1px dashed #d8dce5; border-radius:18px; background:white; text-align:center; color:#667085; font-size:12px;">
+                No questions have been added yet.
+            </div>
+            {% endfor %}
+        </div>
+
+    </div>
+</section>
+
+{% endblock %}

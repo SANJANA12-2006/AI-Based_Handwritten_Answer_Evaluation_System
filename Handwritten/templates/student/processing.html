@@ -1,0 +1,402 @@
+{% extends "base.html" %}
+
+{% block title %}AI Evaluation — NoteGrade{% endblock %}
+
+{% block content %}
+
+<section style="
+    min-height:calc(100vh - 82px);
+    padding:120px 20px;
+    background:#f8f9fc;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+">
+
+    <div style="
+        width:100%;
+        max-width:620px;
+        padding:48px 38px;
+        border:1px solid #e5e7eb;
+        border-radius:28px;
+        background:white;
+        text-align:center;
+        box-shadow:0 20px 60px rgba(16,24,40,.07);
+    ">
+
+        <!-- ICON -->
+
+        <div
+            id="processingIcon"
+            style="
+                width:82px;
+                height:82px;
+                margin:auto;
+                display:flex;
+                align-items:center;
+                justify-content:center;
+                border-radius:24px;
+                background:#f0efff;
+                color:#635bff;
+                font-size:34px;
+                font-weight:700;
+            "
+        >
+            ✦
+        </div>
+
+
+        <!-- TITLE -->
+
+        <h1
+            id="processingTitle"
+            style="
+                margin-top:24px;
+                font-family:Manrope,sans-serif;
+                font-size:28px;
+                color:#101828;
+            "
+        >
+            AI Evaluation in Progress
+        </h1>
+
+
+        <!-- DESCRIPTION -->
+
+        <p
+            id="processingDescription"
+            style="
+                margin-top:12px;
+                color:#667085;
+                font-size:12px;
+                line-height:1.8;
+            "
+        >
+            Your handwritten answers have been extracted.
+            Our AI is now comparing your answers with
+            the teacher's key answers.
+        </p>
+
+
+        <!-- PROGRESS -->
+
+        <div style="
+            margin-top:32px;
+            height:7px;
+            width:100%;
+            background:#eef0f4;
+            border-radius:20px;
+            overflow:hidden;
+        ">
+
+            <div
+                id="progressBar"
+                style="
+                    height:100%;
+                    width:15%;
+                    border-radius:20px;
+                    background:linear-gradient(
+                        90deg,
+                        #635bff,
+                        #8b5cf6
+                    );
+                    transition:width .8s ease;
+                "
+            ></div>
+
+        </div>
+
+
+        <!-- STEPS -->
+
+        <div style="
+            margin-top:30px;
+            display:flex;
+            flex-direction:column;
+            gap:12px;
+            text-align:left;
+        ">
+
+            <div
+                id="stepOCR"
+                style="
+                    padding:15px 17px;
+                    border-radius:14px;
+                    background:#ecfdf3;
+                    color:#087443;
+                    font-size:11px;
+                    font-weight:700;
+                "
+            >
+                ✓ Handwriting OCR completed
+            </div>
+
+
+            <div
+                id="stepParsing"
+                style="
+                    padding:15px 17px;
+                    border-radius:14px;
+                    background:#f0efff;
+                    color:#4b45a3;
+                    font-size:11px;
+                    font-weight:700;
+                "
+            >
+                ✓ Answer structure detected
+            </div>
+
+
+            <div
+                id="stepAI"
+                style="
+                    padding:15px 17px;
+                    border-radius:14px;
+                    background:#f8f9fc;
+                    color:#667085;
+                    font-size:11px;
+                    font-weight:700;
+                "
+            >
+                ◌ AI answer evaluation in progress
+            </div>
+
+        </div>
+
+
+        <!-- SUBMISSION -->
+
+        <div style="
+            margin-top:28px;
+            padding:14px;
+            border-radius:12px;
+            background:#f8f9fc;
+            color:#667085;
+            font-size:10px;
+        ">
+
+            Submission
+
+            <strong style="
+                color:#101828;
+            ">
+                #{{ submission.id }}
+            </strong>
+
+        </div>
+
+
+        <!-- ERROR -->
+
+        <div
+            id="errorBox"
+            style="
+                display:none;
+                margin-top:22px;
+                padding:16px;
+                border-radius:14px;
+                background:#fef3f2;
+                color:#b42318;
+                font-size:11px;
+                line-height:1.7;
+            "
+        ></div>
+
+    </div>
+
+</section>
+
+
+<script>
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+        const progressBar =
+            document.getElementById(
+                "progressBar"
+            );
+
+        const title =
+            document.getElementById(
+                "processingTitle"
+            );
+
+        const description =
+            document.getElementById(
+                "processingDescription"
+            );
+
+        const icon =
+            document.getElementById(
+                "processingIcon"
+            );
+
+        const stepAI =
+            document.getElementById(
+                "stepAI"
+            );
+
+        const errorBox =
+            document.getElementById(
+                "errorBox"
+            );
+
+
+        /*
+         * Small visual progress animation
+         */
+
+        setTimeout(
+            function () {
+                progressBar.style.width =
+                    "35%";
+            },
+            500
+        );
+
+
+        setTimeout(
+            function () {
+                progressBar.style.width =
+                    "60%";
+            },
+            1500
+        );
+
+
+        /*
+         * Start actual AI evaluation
+         */
+
+        fetch(
+            "{{ url_for(
+                'evaluation.evaluate',
+                submission_id=submission.id
+            ) }}",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type":
+                        "application/json"
+                }
+            }
+        )
+
+        .then(
+            response => response.json()
+        )
+
+        .then(
+            function (data) {
+
+                if (!data.success) {
+
+                    throw new Error(
+                        data.message ||
+                        "Evaluation failed."
+                    );
+
+                }
+
+
+                progressBar.style.width =
+                    "100%";
+
+
+                stepAI.innerHTML =
+                    "✓ AI evaluation completed";
+
+                stepAI.style.background =
+                    "#ecfdf3";
+
+                stepAI.style.color =
+                    "#087443";
+
+
+                title.innerText =
+                    "Evaluation Complete";
+
+
+                description.innerText =
+                    "Your handwritten answers have "
+                    + "been successfully evaluated. "
+                    + "Preparing your result...";
+
+
+                icon.innerHTML = "✓";
+
+                icon.style.background =
+                    "#ecfdf3";
+
+                icon.style.color =
+                    "#087443";
+
+
+                setTimeout(
+                    function () {
+
+                        window.location.href =
+                            data.redirect_url;
+
+                    },
+                    900
+                );
+
+            }
+        )
+
+        .catch(
+            function (error) {
+
+                console.error(
+                    error
+                );
+
+
+                title.innerText =
+                    "Evaluation Failed";
+
+
+                description.innerText =
+                    "We could not complete the "
+                    + "AI evaluation automatically.";
+
+
+                icon.innerHTML =
+                    "×";
+
+                icon.style.background =
+                    "#fef3f2";
+
+                icon.style.color =
+                    "#b42318";
+
+
+                progressBar.style.width =
+                    "100%";
+
+
+                progressBar.style.background =
+                    "#f04438";
+
+
+                errorBox.style.display =
+                    "block";
+
+
+                errorBox.innerText =
+                    error.message ||
+                    "Something went wrong "
+                    + "during evaluation.";
+
+            }
+        );
+
+    }
+);
+
+</script>
+
+{% endblock %}

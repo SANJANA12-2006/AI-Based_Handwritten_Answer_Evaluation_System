@@ -1,0 +1,13 @@
+The present flow:
+
+Student image is sent to OCR.
+OCR extracts handwritten text.
+The evaluator compares only the extracted text with the teacher’s key_answer.
+The original image is displayed to the teacher but is not sent to the grading logic.
+So:
+
+Diagram labels may be extracted as text.
+Shapes, arrows, connections, layout, circuits, graphs, maps, and visual correctness are not evaluated.
+A student could draw a correct diagram but receive low marks if the written explanation is missing.
+A teacher can manually inspect the uploaded image from the evaluation page.
+To properly evaluate diagrams, the system would need a separate vision-based evaluation step that sends the student’s original image and the teacher’s reference diagram to a multimodal AI model

@@ -1,0 +1,190 @@
+{% extends "base.html" %}
+
+{% block title %}Student Dashboard — NoteGrade{% endblock %}
+
+{% block content %}
+
+<section style="
+    min-height:calc(100vh - 82px);
+    padding:130px 20px 80px;
+    background:#f8f9fc;
+">
+
+    <div class="container">
+
+        <div style="
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            gap:20px;
+            flex-wrap:wrap;
+        ">
+
+            <div>
+
+                <div class="section-label">
+                    STUDENT PORTAL
+                </div>
+
+                <h1 style="
+                    margin-top:10px;
+                    font-family:Manrope,sans-serif;
+                    font-size:36px;
+                    letter-spacing:-1px;
+                ">
+                    Welcome, {{ current_user.name }} 👋
+                </h1>
+
+                <p style="
+                    margin-top:8px;
+                    color:#667085;
+                    font-size:13px;
+                ">
+                    View your tests, submit handwritten answers and
+                    track your evaluation results.
+                </p>
+
+            </div>
+
+            <div style="
+                display:flex;
+                gap:10px;
+            ">
+
+                <a
+                    href="{{ url_for('student.tests') }}"
+                    class="btn btn-primary"
+                >
+                    View Tests →
+                </a>
+
+                <a
+                    href="{{ url_for('auth.logout') }}"
+                    class="btn btn-outline"
+                >
+                    Logout
+                </a>
+
+            </div>
+
+        </div>
+
+
+        <div style="
+            display:grid;
+            grid-template-columns:repeat(3,1fr);
+            gap:16px;
+            margin-top:40px;
+        ">
+
+            <div class="feature-card">
+
+                <div style="font-size:25px;">
+                    🎓
+                </div>
+
+                <h3 style="
+                    margin-top:12px;
+                    font-size:17px;
+                ">
+                    {{ current_user.student_class.name
+                       if current_user.student_class
+                       else "Not Assigned" }}
+                </h3>
+
+                <p>Your Class</p>
+
+            </div>
+
+
+            <div class="feature-card">
+
+                <div style="font-size:25px;">
+                    📝
+                </div>
+
+                <h3 style="
+                    margin-top:12px;
+                    font-size:25px;
+                ">
+                    {{ available_tests }}
+                </h3>
+
+                <p>Available Tests</p>
+
+            </div>
+
+
+            <div class="feature-card">
+
+                <div style="font-size:25px;">
+                    🏆
+                </div>
+
+                <h3 style="
+                    margin-top:12px;
+                    font-size:25px;
+                ">
+                    {{ completed_tests }}
+                </h3>
+
+                <p>Submitted Tests</p>
+
+            </div>
+
+        </div>
+
+
+        <div style="
+            margin-top:28px;
+            padding:38px;
+            border:1px solid #e7e9ef;
+            border-radius:22px;
+            background:white;
+            box-shadow:0 10px 30px rgba(16,24,40,.04);
+        ">
+
+            <div style="
+                display:flex;
+                justify-content:space-between;
+                align-items:center;
+                gap:20px;
+                flex-wrap:wrap;
+            ">
+
+                <div>
+
+                    <h2 style="
+                        font-family:Manrope,sans-serif;
+                        font-size:21px;
+                    ">
+                        Ready for your next test?
+                    </h2>
+
+                    <p style="
+                        margin-top:7px;
+                        color:#667085;
+                        font-size:12px;
+                    ">
+                        View tests assigned to your class and upload
+                        your handwritten answer sheets.
+                    </p>
+
+                </div>
+
+                <a
+                    href="{{ url_for('student.tests') }}"
+                    class="btn btn-primary"
+                >
+                    Explore Tests
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endblock %}

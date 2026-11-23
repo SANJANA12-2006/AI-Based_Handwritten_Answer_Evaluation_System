@@ -1,0 +1,424 @@
+{% extends "base.html" %}
+
+{% block title %}Test Submissions — NoteGrade{% endblock %}
+
+{% block content %}
+
+<section style="
+    min-height:calc(100vh - 82px);
+    padding:120px 20px 80px;
+    background:#f8f9fc;
+">
+
+    <div style="
+        max-width:1100px;
+        margin:auto;
+    ">
+
+        <a
+            href="{{ url_for('teacher.tests') }}"
+            style="
+                color:#667085;
+                font-size:12px;
+                text-decoration:none;
+            "
+        >
+            ← My Tests
+        </a>
+
+
+        <div style="
+            margin-top:28px;
+        ">
+
+            <div class="section-label">
+                TEST SUBMISSIONS
+            </div>
+
+            <h1 style="
+                margin-top:10px;
+                font-family:Manrope,sans-serif;
+                font-size:34px;
+                color:#101828;
+            ">
+                {{ test.title }}
+            </h1>
+
+            <p style="
+                margin-top:8px;
+                color:#667085;
+                font-size:12px;
+            ">
+                Review student answer sheets and AI evaluations.
+            </p>
+
+        </div>
+
+
+        <!-- SUMMARY -->
+
+        <div style="
+            margin-top:28px;
+            display:grid;
+            grid-template-columns:repeat(3,1fr);
+            gap:15px;
+        ">
+
+            <div style="
+                padding:22px;
+                background:white;
+                border:1px solid #e5e7eb;
+                border-radius:18px;
+            ">
+
+                <div style="
+                    color:#667085;
+                    font-size:10px;
+                ">
+                    TOTAL SUBMISSIONS
+                </div>
+
+                <div style="
+                    margin-top:8px;
+                    font-family:Manrope,sans-serif;
+                    font-size:27px;
+                    font-weight:800;
+                ">
+                    {{ submissions|length }}
+                </div>
+
+            </div>
+
+
+            <div style="
+                padding:22px;
+                background:white;
+                border:1px solid #e5e7eb;
+                border-radius:18px;
+            ">
+
+                <div style="
+                    color:#667085;
+                    font-size:10px;
+                ">
+                    MAXIMUM MARKS
+                </div>
+
+                <div style="
+                    margin-top:8px;
+                    font-family:Manrope,sans-serif;
+                    font-size:27px;
+                    font-weight:800;
+                ">
+                    {{ "%.2f"|format(test.total_marks or 0) }}
+                </div>
+
+            </div>
+
+
+            <div style="
+                padding:22px;
+                background:white;
+                border:1px solid #e5e7eb;
+                border-radius:18px;
+            ">
+
+                <div style="
+                    color:#667085;
+                    font-size:10px;
+                ">
+                    QUESTIONS
+                </div>
+
+                <div style="
+                    margin-top:8px;
+                    font-family:Manrope,sans-serif;
+                    font-size:27px;
+                    font-weight:800;
+                ">
+                    {{ test.questions|length }}
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- SUBMISSIONS -->
+
+        <div style="
+            margin-top:30px;
+        ">
+
+        {% if submissions %}
+
+            {% for submission in submissions %}
+
+            <div style="
+                margin-top:15px;
+                padding:23px;
+                background:white;
+                border:1px solid #e5e7eb;
+                border-radius:19px;
+                box-shadow:0 6px 20px rgba(16,24,40,.035);
+            ">
+
+                <div style="
+                    display:flex;
+                    justify-content:space-between;
+                    align-items:center;
+                    gap:20px;
+                ">
+
+                    <div style="
+                        display:flex;
+                        align-items:center;
+                        gap:15px;
+                    ">
+
+                        <div style="
+                            width:48px;
+                            height:48px;
+                            display:flex;
+                            align-items:center;
+                            justify-content:center;
+                            border-radius:15px;
+                            background:#f0efff;
+                            color:#635bff;
+                            font-weight:800;
+                        ">
+                            {{ submission.student.name[:1]|upper }}
+                        </div>
+
+
+                        <div>
+
+                            <div style="
+                                font-size:14px;
+                                font-weight:800;
+                                color:#101828;
+                            ">
+                                {{ submission.student.name }}
+                            </div>
+
+                            <div style="
+                                margin-top:4px;
+                                color:#667085;
+                                font-size:10px;
+                            ">
+                                {{ submission.student.email }}
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div style="
+                        text-align:right;
+                    ">
+
+                        {% if submission.status == "teacher_reviewed" %}
+
+                            <span style="
+                                padding:7px 11px;
+                                border-radius:50px;
+                                background:#ecfdf3;
+                                color:#087443;
+                                font-size:9px;
+                                font-weight:800;
+                            ">
+                                TEACHER REVIEWED
+                            </span>
+
+                        {% elif submission.status == "evaluated" %}
+
+                            <span style="
+                                padding:7px 11px;
+                                border-radius:50px;
+                                background:#f0efff;
+                                color:#635bff;
+                                font-size:9px;
+                                font-weight:800;
+                            ">
+                                AI EVALUATED
+                            </span>
+
+                        {% elif submission.status == "processing" %}
+
+                            <span style="
+                                padding:7px 11px;
+                                border-radius:50px;
+                                background:#fff7ed;
+                                color:#c2410c;
+                                font-size:9px;
+                                font-weight:800;
+                            ">
+                                PROCESSING
+                            </span>
+
+                        {% else %}
+
+                            <span style="
+                                padding:7px 11px;
+                                border-radius:50px;
+                                background:#f8f9fc;
+                                color:#667085;
+                                font-size:9px;
+                                font-weight:800;
+                            ">
+                                {{ submission.status|upper }}
+                            </span>
+
+                        {% endif %}
+
+                    </div>
+
+                </div>
+
+
+                <div style="
+                    margin-top:20px;
+                    padding-top:18px;
+                    border-top:1px solid #eef0f4;
+                    display:flex;
+                    justify-content:space-between;
+                    align-items:center;
+                    gap:15px;
+                ">
+
+                    <div style="
+                        display:flex;
+                        gap:25px;
+                    ">
+
+                        <div>
+
+                            <div style="
+                                color:#667085;
+                                font-size:9px;
+                            ">
+                                SCORE
+                            </div>
+
+                            <strong style="
+                                display:block;
+                                margin-top:4px;
+                                font-size:14px;
+                            ">
+                                {% if submission.total_marks is not none %}
+                                    {{ "%.2f"|format(submission.total_marks) }}
+                                    /
+                                    {{ "%.2f"|format(test.total_marks) }}
+                                {% else %}
+                                    —
+                                {% endif %}
+                            </strong>
+
+                        </div>
+
+
+                        <div>
+
+                            <div style="
+                                color:#667085;
+                                font-size:9px;
+                            ">
+                                PERCENTAGE
+                            </div>
+
+                            <strong style="
+                                display:block;
+                                margin-top:4px;
+                                font-size:14px;
+                            ">
+                                {% if submission.percentage is not none %}
+                                    {{ "%.1f"|format(submission.percentage) }}%
+                                {% else %}
+                                    —
+                                {% endif %}
+                            </strong>
+
+                        </div>
+
+
+                        <div>
+
+                            <div style="
+                                color:#667085;
+                                font-size:9px;
+                            ">
+                                SUBMITTED
+                            </div>
+
+                            <strong style="
+                                display:block;
+                                margin-top:4px;
+                                font-size:11px;
+                            ">
+                                {{ submission.submitted_at.strftime("%d %b %Y, %I:%M %p") }}
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+
+                    <a
+                        href="{{ url_for(
+                            'teacher.evaluation',
+                            submission_id=submission.id
+                        ) }}"
+                        class="btn btn-primary"
+                    >
+                        View Evaluation →
+                    </a>
+
+                </div>
+
+            </div>
+
+            {% endfor %}
+
+        {% else %}
+
+            <div style="
+                padding:60px 30px;
+                text-align:center;
+                background:white;
+                border:1px solid #e5e7eb;
+                border-radius:22px;
+            ">
+
+                <div style="
+                    font-size:35px;
+                ">
+                    📄
+                </div>
+
+                <h3 style="
+                    margin-top:15px;
+                    font-family:Manrope,sans-serif;
+                ">
+                    No Submissions Yet
+                </h3>
+
+                <p style="
+                    margin-top:7px;
+                    color:#667085;
+                    font-size:11px;
+                ">
+                    Students have not submitted this test yet.
+                </p>
+
+            </div>
+
+        {% endif %}
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endblock %}
